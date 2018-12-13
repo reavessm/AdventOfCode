@@ -1,6 +1,7 @@
-package main
+package main // The main package ;)
 
 import (
+  // If your import section is longer than your code, then you didn't code
   "fmt"
   "os"
   "log"
@@ -10,6 +11,7 @@ import (
 )
 
 func main() {
+  // Open file.  This should be a symbolic link to the actual data
   file, err := os.Open("run.txt")
   if err != nil {
     log.Fatal(err)
@@ -18,44 +20,52 @@ func main() {
 
   scanner := bufio.NewScanner(file)
 
+  // Define some "global" stuff
   var e            string = "."   // represents empty space
   var dub          string = "x"   // represents overlapping space
   var dubCounter   int    = 0
   var max_x, max_y int    = 1000, 1000
   
+  // 2D map, map of maps
   colmap := make(map[int]map[int]string)
-
-    for i := 0; i < max_y; i++ {
-      rowmap := make(map[int]string)
-      for j := 0; j < max_x; j++ {
-        rowmap[j] = e
-      }
-      colmap[i] = rowmap
+  
+  // Prepopulate grid with null characters
+  for i := 0; i < max_y; i++ {
+    rowmap := make(map[int]string)
+    for j := 0; j < max_x; j++ {
+      rowmap[j] = e
     }
+    colmap[i] = rowmap
+  }
 
+  // Read file
   for scanner.Scan() {
+    // Read line
     var line string = scanner.Text()
 
     fmt.Println(line)
+    // Define RegExes
     i, _ := regexp.CompilePOSIX(`^#([1-9]+)[[:space:]]`)
     l, _ := regexp.CompilePOSIX(`@[[:space:]]([1-9]+),`)
     t, _ := regexp.CompilePOSIX(`,([1-9]+):[[:space:]]`)
     w, _ := regexp.CompilePOSIX(`:[[:space:]]([1-9]+)x`)
     h, _ := regexp.CompilePOSIX(`x([1-9]+).*$`)
 
+    // Find pattern matches, (stuff inside parens)
     top    := t.FindAllStringSubmatch(line, -1)[0][1]
     left   := l.FindAllStringSubmatch(line, -1)[0][1]
     width  := w.FindAllStringSubmatch(line, -1)[0][1]
     index  := i.FindAllStringSubmatch(line, -1)[0][1]
     height := h.FindAllStringSubmatch(line, -1)[0][1]
 
+    // Convert strings to ints
     leftNum,_   := strconv.Atoi(left)
     topNum,_    := strconv.Atoi(top)
     widthNum,_  := strconv.Atoi(width)
     heightNum,_ := strconv.Atoi(height)
 
+    bottomNum := topNum  + heightNum
     rightNum  := leftNum + widthNum
-    bottomNum := topNum + heightNum
 
     fmt.Println()
     fmt.Println("**********")
@@ -68,10 +78,12 @@ func main() {
     fmt.Println(bottomNum)
     fmt.Println("**********")
 
+    // Insert and check for overlaps
     for i := 0; i < max_y; i++ {
       for j := 0; j < max_x; j++ {
         if j >= leftNum && j < rightNum && i >= topNum && i < bottomNum {
-          if colmap[i][j] != e && colmap[i][j] != dub {
+          // if there's another index there, then this is an overlap
+          if colmap[i][j] != e && colmap[i][j] != dub { 
             colmap[i][j] = dub
             fmt.Print(dub)
           } else {
@@ -90,6 +102,7 @@ func main() {
   fmt.Println()
   fmt.Println("Starting map range")
 
+  // Counts overlaps, could be done early and save a loop
   for i := 0; i <= len(colmap); i++ {
     for j := 0; j <= len(colmap[i]); j++ {
       fmt.Print(colmap[i][j])
@@ -100,6 +113,7 @@ func main() {
     fmt.Println()
   }
 
+  // This is the only thing that needs to be printed, AKA the answer
   fmt.Print("Overlapping Squares: ")
   fmt.Println(dubCounter)
 
