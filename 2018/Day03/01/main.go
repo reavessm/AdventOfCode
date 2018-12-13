@@ -43,20 +43,19 @@ func main() {
     // Read line
     var line string = scanner.Text()
 
-    fmt.Println(line)
     // Define RegExes
-    i, _ := regexp.CompilePOSIX(`^#([1-9]+)[[:space:]]`)
-    l, _ := regexp.CompilePOSIX(`@[[:space:]]([1-9]+),`)
-    t, _ := regexp.CompilePOSIX(`,([1-9]+):[[:space:]]`)
-    w, _ := regexp.CompilePOSIX(`:[[:space:]]([1-9]+)x`)
-    h, _ := regexp.CompilePOSIX(`x([1-9]+).*$`)
+    i, _ := regexp.CompilePOSIX(`^#([0-9]+)[[:space:]]`)
+    l, _ := regexp.CompilePOSIX(`@[[:space:]]([0-9]+),`)
+    t, _ := regexp.CompilePOSIX(`,([0-9]+):[[:space:]]`)
+    w, _ := regexp.CompilePOSIX(`:[[:space:]]([0-9]+)x`)
+    h, _ := regexp.CompilePOSIX(`x([0-9]+).*$`)
 
     // Find pattern matches, (stuff inside parens)
-    top    := t.FindAllStringSubmatch(line, -1)[0][1]
-    left   := l.FindAllStringSubmatch(line, -1)[0][1]
-    width  := w.FindAllStringSubmatch(line, -1)[0][1]
-    index  := i.FindAllStringSubmatch(line, -1)[0][1]
-    height := h.FindAllStringSubmatch(line, -1)[0][1]
+    top    := t.FindStringSubmatch(line)[1]
+    left   := l.FindStringSubmatch(line)[1]
+    width  := w.FindStringSubmatch(line)[1]
+    index  := i.FindStringSubmatch(line)[1]
+    height := h.FindStringSubmatch(line)[1]
 
     // Convert strings to ints
     leftNum,_   := strconv.Atoi(left)
@@ -67,50 +66,49 @@ func main() {
     bottomNum := topNum  + heightNum
     rightNum  := leftNum + widthNum
 
-    fmt.Println()
-    fmt.Println("**********")
-    fmt.Println("I: " + index)
-    fmt.Println("L: " + left)
-    fmt.Println("W: " + width)
-    fmt.Println("T: " + top)
-    fmt.Println("H: " + height)
-    fmt.Println(rightNum)
-    fmt.Println(bottomNum)
-    fmt.Println("**********")
+    //fmt.Println()
+    //fmt.Println("**********")
+    //fmt.Println("I: " + index)
+    //fmt.Println("L: " + left)
+    //fmt.Println("W: " + width)
+    //fmt.Println("T: " + top)
+    //fmt.Println("H: " + height)
+    //fmt.Println(rightNum)
+    //fmt.Println(bottomNum)
+    //fmt.Println("**********")
 
     // Insert and check for overlaps
     for i := 0; i < max_y; i++ {
       for j := 0; j < max_x; j++ {
         if j >= leftNum && j < rightNum && i >= topNum && i < bottomNum {
           // if there's another index there, then this is an overlap
-          if colmap[i][j] != e && colmap[i][j] != dub { 
+          if colmap[i][j] != e { 
             colmap[i][j] = dub
-            fmt.Print(dub)
+            //fmt.Print(dub)
           } else {
             colmap[i][j] = index
-            fmt.Print(index)
+            //fmt.Print(index)
           }
         } else {
-          fmt.Print(e)
-          //colmap[i][j] = e
+          //fmt.Print(e)
         }
       }
-      fmt.Println()
+      //fmt.Println()
     }
   }
 
-  fmt.Println()
-  fmt.Println("Starting map range")
+  //fmt.Println()
+  //fmt.Println("Starting map range")
 
   // Counts overlaps, could be done early and save a loop
   for i := 0; i <= len(colmap); i++ {
     for j := 0; j <= len(colmap[i]); j++ {
-      fmt.Print(colmap[i][j])
+      //fmt.Print(colmap[i][j] + " ")
       if colmap[i][j] == dub {
         dubCounter++
       }
     }
-    fmt.Println()
+    //fmt.Println()
   }
 
   // This is the only thing that needs to be printed, AKA the answer
