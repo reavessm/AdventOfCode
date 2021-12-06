@@ -13,6 +13,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -21,41 +22,30 @@ const (
 )
 
 var (
-	firstChar  []string
-	secondChar []string
-	thirdChar  []string
-	fourthChar []string
+	mostCommonArr  []string   // Arrary holding the most common bits in their correct positioning
+	leastCommonArr []string   // Arrary holding the least common bits in their correct positioning
+	charArr        [][]string // The index of the first dimensions slice corresponds to the character of they binary string while the index of the second dimension corresponds to the line.  This is essentially a matrix transpositioning of the input.
 )
 
-func readFile(r io.Reader) error {
+// readFile reads binary strings from a file and stores them in a slice of slice broken up by character index
+func readFile(r io.Reader) {
 	scanner := bufio.NewScanner(r)
 	scanner.Split(bufio.ScanLines)
 
+	// iterate each line
 	for scanner.Scan() {
 		v := scanner.Text()
-		firstChar = append(firstChar, v[0:1])
-		secondChar = append(secondChar, v[1:2])
-		thirdChar = append(thirdChar, v[2:3])
-		fourthChar = append(fourthChar, v[3:4])
-	}
-	return nil
-}
 
-func getBinary() []uint64 {
-	binary := []string{
-		"1001",
-		"1101",
-		"11101",
-	}
-	var hex []uint64
-	for _, v := range binary {
-		h, err := strconv.ParseUint(v, 2, 10)
-		if err != nil {
-			log.Fatalln(err)
+		// initizialize charArr on first run
+		if len(charArr) == 0 {
+			charArr = make([][]string, len(v))
 		}
-		hex = append(hex, h)
+
+		// iterate each character
+		for k, token := range strings.Split(v, "") {
+			charArr[k] = append(charArr[k], token)
+		}
 	}
-	return hex
 }
 
 func b2i(b bool) int8 {
@@ -63,52 +53,6 @@ func b2i(b bool) int8 {
 		return 1
 	}
 	return 0
-}
-
-func mostCommon() {
-	binary := []string{
-		"1001",
-		"1101",
-		"11101",
-	}
-	fmt.Printf("%s\n", string(binary[1][2]))
-	first, second, third, fourth := 0, 0, 0, 0
-	for _, v := range binary {
-		firstBit := v[0:1]
-		if firstBit == "0" {
-			first--
-		} else {
-			first++
-		}
-
-		secondBit := v[1:2]
-		if secondBit == "0" {
-			second--
-		} else {
-			second++
-		}
-
-		thirdBit := v[2:3]
-		if thirdBit == "0" {
-			third--
-		} else {
-			third++
-		}
-
-		fourthBit := v[3:4]
-		if fourthBit == "0" {
-			fourth--
-		} else {
-			fourth++
-		}
-	}
-	v := fmt.Sprintf("%d%d%d%d", b2i(first >= 1), b2i(second >= 1), b2i(third >= 1), b2i(fourth >= 1))
-	h, err := strconv.ParseUint(v, 2, 4)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	fmt.Println(v)
-	fmt.Println(h)
 }
 
 func findMostCommon(wg *sync.WaitGroup, s []string, result *string) {
@@ -125,22 +69,65 @@ func findMostCommon(wg *sync.WaitGroup, s []string, result *string) {
 	*result = fmt.Sprintf("%v", b2i(bit >= 1))
 }
 
+func findLeastCommon(wg *sync.WaitGroup, s []string, result *string) {
+	defer wg.Done()
+	bit := 0
+	for _, v := range s {
+		if v == "1" {
+			bit--
+		} else {
+			bit++
+		}
+	}
+
+	*result = fmt.Sprintf("%v", b2i(bit >= 1))
+}
+
+func formatAsBinary(s []string) string {
+	var result string
+	for _, v := range s {
+		result += v
+	}
+	return result
+}
+
 func main() {
 	reader, err := os.Open(filename)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	err = readFile(reader)
-	if err != nil {
-		log.Fatalln(err)
-	}
+
+	readFile(reader)
+
+	// Make result slice match input slice
+	mostCommonArr = make([]string, len(charArr))
+	leastCommonArr = make([]string, len(charArr))
+
 	wg := new(sync.WaitGroup)
-	var firstResult string
-	for i := 0; i < 1; i++ {
-		wg.Add(1)
-		go findMostCommon(wg, firstChar, &firstResult)
+	for i := 0; i < len(charArr); i++ {
+		wg.Add(2)
+		go findMostCommon(wg, charArr[i], &mostCommonArr[i])
+		go findLeastCommon(wg, charArr[i], &leastCommonArr[i])
 	}
 
 	wg.Wait()
-	fmt.Println(firstResult)
+
+	mostCommonBit := formatAsBinary(mostCommonArr)
+	leastCommonBit := formatAsBinary(leastCommonArr)
+
+	fmt.Println("Most common: ", mostCommonBit)
+	fmt.Println("Least common:", leastCommonBit)
+
+	mcbDecimal, err := strconv.ParseUint(mostCommonBit, 2, 12)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	lcbDecimal, err := strconv.ParseUint(leastCommonBit, 2, 12)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println("Most common as decimal: ", mcbDecimal)
+	fmt.Println("Least common as decimal:", lcbDecimal)
+
+	fmt.Println("Answer:", lcbDecimal*mcbDecimal)
 }
