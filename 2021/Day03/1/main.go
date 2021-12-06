@@ -7,10 +7,39 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"strconv"
+	"sync"
 )
+
+const (
+	filename = "../input.txt"
+)
+
+var (
+	firstChar  []string
+	secondChar []string
+	thirdChar  []string
+	fourthChar []string
+)
+
+func readFile(r io.Reader) error {
+	scanner := bufio.NewScanner(r)
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		v := scanner.Text()
+		firstChar = append(firstChar, v[0:1])
+		secondChar = append(secondChar, v[1:2])
+		thirdChar = append(thirdChar, v[2:3])
+		fourthChar = append(fourthChar, v[3:4])
+	}
+	return nil
+}
 
 func getBinary() []uint64 {
 	binary := []string{
@@ -82,9 +111,36 @@ func mostCommon() {
 	fmt.Println(h)
 }
 
+func findMostCommon(wg *sync.WaitGroup, s []string, result *string) {
+	defer wg.Done()
+	bit := 0
+	for _, v := range s {
+		if v == "1" {
+			bit++
+		} else {
+			bit--
+		}
+	}
+
+	*result = fmt.Sprintf("%v", b2i(bit >= 1))
+}
+
 func main() {
-	//for _, v := range getBinary() {
-	//fmt.Printf("%x\n", v)
-	//}
-	mostCommon()
+	reader, err := os.Open(filename)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = readFile(reader)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	wg := new(sync.WaitGroup)
+	var firstResult string
+	for i := 0; i < 1; i++ {
+		wg.Add(1)
+		go findMostCommon(wg, firstChar, &firstResult)
+	}
+
+	wg.Wait()
+	fmt.Println(firstResult)
 }
