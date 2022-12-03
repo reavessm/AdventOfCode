@@ -3,9 +3,8 @@ use crate::args;
 use std::fs;
 
 pub fn run(a: args::Arguments) {
-    println!("Part 2");
     let result = run_string(fs::read_to_string(a.get_input()).unwrap());
-    println!("Result is {}", result);
+    println!("D02P2 {}", result);
 }
 
 fn run_string(s: String) -> u32 {

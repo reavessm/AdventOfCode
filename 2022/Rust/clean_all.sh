@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for f in *
+for f in Day*
 do
-  [[ -d ${f} ]] && (cd ${f} && cargo clean)
+  (cd ${f} && cargo clean)
 done

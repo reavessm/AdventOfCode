@@ -50,5 +50,5 @@ pub fn run(a: args::Arguments) {
         + elves.get(elf_two).unwrap().total_calories
         + elves.get(elf_three).unwrap().total_calories;
 
-    println!("Total calories for max three elves is {}", total_calories);
+    println!("D01P2 {}", total_calories);
 }

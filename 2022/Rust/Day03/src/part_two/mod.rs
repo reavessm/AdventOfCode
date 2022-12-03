@@ -3,7 +3,7 @@ use itertools::Itertools;
 
 pub fn run(a: args::Arguments) {
     println!(
-        "Part 2: {}",
+        "D03P2 {}",
         run_string(std::fs::read_to_string(a.get_input()).unwrap())
     );
 }

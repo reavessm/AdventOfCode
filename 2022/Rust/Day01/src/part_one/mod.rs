@@ -38,8 +38,5 @@ pub fn run(a: args::Arguments) {
         }
     }
 
-    println!(
-        "Total calories for max elf is {}",
-        elves.get(max_elf).unwrap().total_calories
-    );
+    println!("D01P1 {}", elves.get(max_elf).unwrap().total_calories);
 }

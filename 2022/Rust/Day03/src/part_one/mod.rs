@@ -2,7 +2,7 @@ use crate::args;
 
 pub fn run(a: args::Arguments) {
     println!(
-        "Part 1: {}",
+        "D03P1 {}",
         run_string(std::fs::read_to_string(a.get_input()).unwrap())
     );
 }
