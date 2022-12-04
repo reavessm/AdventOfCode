@@ -7,7 +7,7 @@ pub fn run(a: args::Arguments) {
     );
 }
 
-fn run_string(s: String) -> u32 {
+fn run_string(s: String) -> usize {
     println!("{}", s);
     0
 }
