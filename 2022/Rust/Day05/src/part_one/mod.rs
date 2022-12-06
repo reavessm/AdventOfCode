@@ -56,7 +56,7 @@ fn run_string(s: String) -> String {
         let l = l.trim();
 
         let (count, from, to) = sscanf!(l, "move {usize} from {usize} to {usize}").unwrap();
-        //let mut f = stack_map.get(&from).unwrap();
+
         let f = stack_map.get(&from);
         let t = stack_map.get(&to);
         if f.is_some() && t.is_some() {
@@ -85,11 +85,6 @@ fn run_string(s: String) -> String {
     }
 
     return s;
-
-    //for value in stack_map
-    //.iter()
-    //.map(|(_, s)| s.as_ref().peek().unwrap().to_string())
-    //.collect()
 }
 
 #[cfg(test)]
