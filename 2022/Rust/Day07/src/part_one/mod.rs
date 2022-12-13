@@ -3,83 +3,49 @@ use crate::tree;
 
 pub fn run(a: args::Arguments) {
     println!(
-        "Part 1: {}",
+        "D07P1 {}",
         run_string(std::fs::read_to_string(a.get_input()).unwrap())
     );
 }
 
 fn run_string(s: String) -> usize {
+    tree::NodePointer::default()
+        .parse(s)
+        .dfs()
+        .map(|d| d.borrow().size)
+        .filter(|x| *x < 100_000)
+        .sum::<usize>()
+    /*
     let root = tree::NodePointer::default();
-    let cur = root.clone();
+    root.parse(s);
 
-    for line in s.lines() {
-        let mut tokens = line.split_whitespace();
-        let first = tokens.nth(0);
+    println!("Dir len: {}", root.node.borrow().dirs.len());
 
-        if first.is_none() {
-            break;
-        }
+    root.build_size();
 
-        let second = tokens.nth(0);
+    println!("Dir len: {}", root.node.borrow().dirs.len());
 
-        if second.is_none() {
-            break;
-        }
-
-        match first.unwrap() {
-            "$" => match second.unwrap() {
-                "cd" => {
-                    let third = tokens.nth(0);
-                    if third.is_none() {
-                        continue;
-                    }
-                    let d = cur.node.clone();
-                    let d = d.as_ref().borrow_mut();
-                    let d = &d.dirs;
-                    let dir = d.get(third.unwrap());
-                    if dir.is_none() {
-                        continue;
-                    }
-                    cur.cd(tree::NodePointer::new(third.unwrap()));
-                }
-                _ => {}
-            },
-            "dir" => {
-                let third = tokens.nth(0);
-                if third.is_none() {
-                    continue;
-                }
-                let mut t = cur.node.as_ref().borrow_mut();
-                t.add_dir(third.unwrap());
-            }
-            num @ _ => {
-                let num = num.parse::<usize>();
-                if num.is_err() {
-                    continue;
-                }
-                let num = num.unwrap();
-                let mut tree = cur.node.as_ref().borrow_mut();
-                tree.add_file(second.unwrap(), num)
-            }
-        }
-    }
-
-    let mut leaf_vec: Vec<tree::NodePointer> = Vec::new();
-    root.leaf_dirs(&mut leaf_vec);
-
-    for d in leaf_vec.iter_mut() {
-        d.build_size();
-    }
+    println!("Root size: {}", root.node.borrow().size);
+    let sum: usize = root
+        .dfs()
+        .map(|d| d.borrow_mut().size)
+        .filter(|x| *x < 10000)
+        .sum();
 
     // TODO: Find node < 10000 or whatever
-    return root.node.borrow().size;
+    //return root.node.borrow().size;
+    return sum;
+    */
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    //use ntest_timeout::timeout;
+
     #[test]
+    //#[timeout(1000)]
     fn it_works() {
         let input = "$ cd /
                      $ ls

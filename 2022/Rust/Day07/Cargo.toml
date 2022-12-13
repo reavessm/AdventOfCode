@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 text-colorizer = "1"
 clap = { version = "3.1.6", features = ["derive"] }
+ntest_timeout = "0.9.0"
 
 # Set the default for dependencies.
 [profile.dev.package."*"]
