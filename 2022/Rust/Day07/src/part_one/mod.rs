@@ -15,37 +15,16 @@ fn run_string(s: String) -> usize {
         .map(|d| d.borrow().size)
         .filter(|x| *x < 100_000)
         .sum::<usize>()
-    /*
-    let root = tree::NodePointer::default();
-    root.parse(s);
-
-    println!("Dir len: {}", root.node.borrow().dirs.len());
-
-    root.build_size();
-
-    println!("Dir len: {}", root.node.borrow().dirs.len());
-
-    println!("Root size: {}", root.node.borrow().size);
-    let sum: usize = root
-        .dfs()
-        .map(|d| d.borrow_mut().size)
-        .filter(|x| *x < 10000)
-        .sum();
-
-    // TODO: Find node < 10000 or whatever
-    //return root.node.borrow().size;
-    return sum;
-    */
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    //use ntest_timeout::timeout;
+    use ntest_timeout::timeout;
 
     #[test]
-    //#[timeout(1000)]
+    #[timeout(1000)]
     fn it_works() {
         let input = "$ cd /
                      $ ls
