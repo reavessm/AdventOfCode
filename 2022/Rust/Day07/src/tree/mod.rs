@@ -5,6 +5,15 @@ use std::{
     rc::Rc,
 };
 
+pub enum NewNode {
+    None,
+    HasNode(HashMap<String, NewTreeNode>),
+}
+
+pub struct NewTreeNode {
+    dirs: NewNode,
+}
+
 pub type Node = Rc<RefCell<Box<Tree>>>;
 
 #[derive(Debug, Clone)]
